@@ -10,13 +10,14 @@ type Result =
  };
 type Post = 
  record {
+   author: text;
    content: text;
    id: nat;
    timestamp: int;
    title: text;
  };
 service : {
-  createPost: (text, text) -> (Result_1);
+  createPost: (text, text, text) -> (Result_1);
   getFeaturedPosts: () -> (vec Post) query;
   getPosts: () -> (vec Post) query;
   setFeaturedPost: (nat) -> (Result);

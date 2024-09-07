@@ -6,6 +6,7 @@ export interface Post {
   'id' : bigint,
   'title' : string,
   'content' : string,
+  'author' : string,
   'timestamp' : bigint,
 }
 export type Result = { 'ok' : null } |
@@ -13,7 +14,7 @@ export type Result = { 'ok' : null } |
 export type Result_1 = { 'ok' : bigint } |
   { 'err' : string };
 export interface _SERVICE {
-  'createPost' : ActorMethod<[string, string], Result_1>,
+  'createPost' : ActorMethod<[string, string, string], Result_1>,
   'getFeaturedPosts' : ActorMethod<[], Array<Post>>,
   'getPosts' : ActorMethod<[], Array<Post>>,
   'setFeaturedPost' : ActorMethod<[bigint], Result>,

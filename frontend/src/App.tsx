@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, Card, CardContent, AppBar, Toolbar, CircularProgress } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, AppBar, Toolbar, CircularProgress, Button } from '@mui/material';
 import { backend } from 'declarations/backend';
 
 type Post = {
   id: bigint;
   title: string;
   content: string;
+  author: string;
   timestamp: bigint;
 };
 
@@ -34,18 +35,25 @@ const App: React.FC = () => {
   }, []);
 
   const renderPosts = (postList: Post[], isFeatured: boolean = false) => (
-    <Grid container spacing={2}>
+    <Grid container spacing={3}>
       {postList.map((post) => (
         <Grid item xs={12} key={Number(post.id)}>
           <Card>
             <CardContent>
-              <Typography variant={isFeatured ? 'h4' : 'h5'} component="div">
+              <Typography variant={isFeatured ? 'h4' : 'h5'} component="div" gutterBottom>
                 {post.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {new Date(Number(post.timestamp) / 1000000).toLocaleString()}
+              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                By {post.author} | {new Date(Number(post.timestamp) / 1000000).toLocaleString()}
               </Typography>
-              <Typography variant="body1">{post.content}</Typography>
+              <Typography variant="body1" paragraph>
+                {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+              </Typography>
+              {post.content.length > 200 && (
+                <Button variant="text" color="primary">
+                  Read More
+                </Button>
+              )}
             </CardContent>
           </Card>
         </Grid>
