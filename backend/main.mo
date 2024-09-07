@@ -67,6 +67,26 @@ actor {
     #ok(post.id)
   };
 
+  public func editPost(id: Nat, title: Text, content: Text, author: Text) : async Result.Result<(), Text> {
+    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0 }, postsBuffer, func(a, b) { a.id == b.id });
+    switch (index) {
+      case (?i) {
+        let updatedPost: Post = {
+          id = id;
+          title = title;
+          content = content;
+          author = author;
+          timestamp = Time.now();
+        };
+        postsBuffer.put(i, updatedPost);
+        #ok(())
+      };
+      case null {
+        #err("Post not found")
+      };
+    }
+  };
+
   public query func getPosts() : async [Post] {
     Buffer.toArray(postsBuffer)
   };
