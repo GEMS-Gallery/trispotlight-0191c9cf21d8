@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, Card, CardContent, AppBar, Toolbar, CircularProgress, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, AppBar, Toolbar, CircularProgress, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { backend } from 'declarations/backend';
 
 type Post = {
@@ -111,9 +113,19 @@ const App: React.FC = () => {
           <Grid item xs={12} key={Number(post.id)}>
             <Card>
               <CardContent>
-                <Typography variant={isFeatured ? 'h4' : 'h5'} component="div" gutterBottom>
-                  {post.title}
-                </Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  <Typography variant={isFeatured ? 'h4' : 'h5'} component="div" gutterBottom>
+                    {post.title}
+                  </Typography>
+                  <Box>
+                    <IconButton size="small" onClick={() => handleOpenDialog(post)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => handleDeleteConfirmation(post)}>
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
                 <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                   By {post.author} | {new Date(Number(post.timestamp) / 1000000).toLocaleString()}
                 </Typography>
@@ -125,12 +137,6 @@ const App: React.FC = () => {
                     {isExpanded ? 'Read Less' : 'Read More'}
                   </Button>
                 )}
-                <Button variant="outlined" color="primary" onClick={() => handleOpenDialog(post)} sx={{ mt: 2, ml: 2 }}>
-                  Edit
-                </Button>
-                <Button variant="outlined" color="secondary" onClick={() => handleDeleteConfirmation(post)} sx={{ mt: 2, ml: 2 }}>
-                  Delete
-                </Button>
               </CardContent>
             </Card>
           </Grid>

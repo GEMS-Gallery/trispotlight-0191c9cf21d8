@@ -1,4 +1,5 @@
 import Nat "mo:base/Nat";
+import Order "mo:base/Order";
 
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
@@ -102,7 +103,10 @@ actor {
   };
 
   public query func getPosts() : async [Post] {
-    Buffer.toArray(postsBuffer)
+    let sortedPosts = Buffer.toArray(postsBuffer);
+    Array.sort(sortedPosts, func(a: Post, b: Post) : Order.Order {
+      Int.compare(b.timestamp, a.timestamp)
+    })
   };
 
   public query func getFeaturedPosts() : async [Post] {
@@ -113,7 +117,10 @@ actor {
         case (null) {};
       };
     };
-    Buffer.toArray(featuredPosts)
+    let sortedFeaturedPosts = Buffer.toArray(featuredPosts);
+    Array.sort(sortedFeaturedPosts, func(a: Post, b: Post) : Order.Order {
+      Int.compare(b.timestamp, a.timestamp)
+    })
   };
 
   public func setFeaturedPost(id: Nat) : async Result.Result<(), Text> {
