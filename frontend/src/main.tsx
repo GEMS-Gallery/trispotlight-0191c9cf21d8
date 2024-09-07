@@ -21,7 +21,9 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#2c3e50',
+          backgroundImage: 'url(/src/assets/entrepreneur-background.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         },
       },
