@@ -13,6 +13,7 @@ type Post =
    author: text;
    content: text;
    id: nat;
+   starred: bool;
    timestamp: int;
    title: text;
  };
@@ -22,5 +23,6 @@ service : {
   editPost: (nat, text, text, text) -> (Result);
   getFeaturedPosts: () -> (vec Post) query;
   getPosts: () -> (vec Post) query;
-  setFeaturedPost: (nat) -> (Result);
+  starPost: (nat) -> (Result);
+  unstarPost: (nat) -> (Result);
 }

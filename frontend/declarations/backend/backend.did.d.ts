@@ -6,6 +6,7 @@ export interface Post {
   'id' : bigint,
   'title' : string,
   'content' : string,
+  'starred' : boolean,
   'author' : string,
   'timestamp' : bigint,
 }
@@ -19,7 +20,8 @@ export interface _SERVICE {
   'editPost' : ActorMethod<[bigint, string, string, string], Result>,
   'getFeaturedPosts' : ActorMethod<[], Array<Post>>,
   'getPosts' : ActorMethod<[], Array<Post>>,
-  'setFeaturedPost' : ActorMethod<[bigint], Result>,
+  'starPost' : ActorMethod<[bigint], Result>,
+  'unstarPost' : ActorMethod<[bigint], Result>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

@@ -5,6 +5,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat,
     'title' : IDL.Text,
     'content' : IDL.Text,
+    'starred' : IDL.Bool,
     'author' : IDL.Text,
     'timestamp' : IDL.Int,
   });
@@ -18,7 +19,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getFeaturedPosts' : IDL.Func([], [IDL.Vec(Post)], ['query']),
     'getPosts' : IDL.Func([], [IDL.Vec(Post)], ['query']),
-    'setFeaturedPost' : IDL.Func([IDL.Nat], [Result], []),
+    'starPost' : IDL.Func([IDL.Nat], [Result], []),
+    'unstarPost' : IDL.Func([IDL.Nat], [Result], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Grid, Card, CardContent, AppBar, Toolbar, CircularProgress, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { backend } from 'declarations/backend';
 
 type Post = {
@@ -10,6 +12,7 @@ type Post = {
   content: string;
   author: string;
   timestamp: bigint;
+  starred: boolean;
 };
 
 const App: React.FC = () => {
@@ -105,6 +108,19 @@ const App: React.FC = () => {
     }
   };
 
+  const handleStarPost = async (post: Post) => {
+    try {
+      if (post.starred) {
+        await backend.unstarPost(post.id);
+      } else {
+        await backend.starPost(post.id);
+      }
+      fetchPosts();
+    } catch (error) {
+      console.error('Error starring/unstarring post:', error);
+    }
+  };
+
   const renderPosts = (postList: Post[], isFeatured: boolean = false) => (
     <Grid container spacing={3}>
       {postList.map((post) => {
@@ -118,6 +134,9 @@ const App: React.FC = () => {
                     {post.title}
                   </Typography>
                   <Box>
+                    <IconButton size="small" onClick={() => handleStarPost(post)}>
+                      {post.starred ? <StarIcon color="primary" /> : <StarBorderIcon />}
+                    </IconButton>
                     <IconButton size="small" onClick={() => handleOpenDialog(post)}>
                       <EditIcon fontSize="small" />
                     </IconButton>

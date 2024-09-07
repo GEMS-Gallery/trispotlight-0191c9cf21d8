@@ -1,3 +1,4 @@
+import Bool "mo:base/Bool";
 import Nat "mo:base/Nat";
 import Order "mo:base/Order";
 
@@ -15,11 +16,11 @@ actor {
     content: Text;
     author: Text;
     timestamp: Int;
+    starred: Bool;
   };
 
   stable var nextPostId: Nat = 0;
   let postsBuffer = Buffer.Buffer<Post>(10);
-  stable var featuredPostIds: [Nat] = [];
 
   func addMockArticles() {
     let mockArticles = [
@@ -47,6 +48,7 @@ actor {
         content = article.content;
         author = article.author;
         timestamp = Time.now();
+        starred = false;
       };
       postsBuffer.add(post);
       nextPostId += 1;
@@ -62,6 +64,7 @@ actor {
       content = content;
       author = author;
       timestamp = Time.now();
+      starred = false;
     };
     postsBuffer.add(post);
     nextPostId += 1;
@@ -69,7 +72,7 @@ actor {
   };
 
   public func editPost(id: Nat, title: Text, content: Text, author: Text) : async Result.Result<(), Text> {
-    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0 }, postsBuffer, func(a, b) { a.id == b.id });
+    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0; starred = false }, postsBuffer, func(a, b) { a.id == b.id });
     switch (index) {
       case (?i) {
         let updatedPost: Post = {
@@ -78,6 +81,7 @@ actor {
           content = content;
           author = author;
           timestamp = Time.now();
+          starred = postsBuffer.get(i).starred;
         };
         postsBuffer.put(i, updatedPost);
         #ok(())
@@ -89,11 +93,10 @@ actor {
   };
 
   public func deletePost(id: Nat) : async Result.Result<(), Text> {
-    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0 }, postsBuffer, func(a, b) { a.id == b.id });
+    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0; starred = false }, postsBuffer, func(a, b) { a.id == b.id });
     switch (index) {
       case (?i) {
         ignore postsBuffer.remove(i);
-        featuredPostIds := Array.filter<Nat>(featuredPostIds, func(fid) { fid != id });
         #ok(())
       };
       case null {
@@ -110,11 +113,10 @@ actor {
   };
 
   public query func getFeaturedPosts() : async [Post] {
-    let featuredPosts = Buffer.Buffer<Post>(featuredPostIds.size());
-    for (id in featuredPostIds.vals()) {
-      switch (Buffer.find<Post>(postsBuffer, func(p) { p.id == id })) {
-        case (?post) { featuredPosts.add(post); };
-        case (null) {};
+    let featuredPosts = Buffer.Buffer<Post>(10);
+    for (post in postsBuffer.vals()) {
+      if (post.starred) {
+        featuredPosts.add(post);
       };
     };
     let sortedFeaturedPosts = Buffer.toArray(featuredPosts);
@@ -123,13 +125,45 @@ actor {
     })
   };
 
-  public func setFeaturedPost(id: Nat) : async Result.Result<(), Text> {
-    switch (Buffer.find<Post>(postsBuffer, func(p) { p.id == id })) {
-      case (?post) {
-        featuredPostIds := Array.append(featuredPostIds, [id]);
+  public func starPost(id: Nat) : async Result.Result<(), Text> {
+    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0; starred = false }, postsBuffer, func(a, b) { a.id == b.id });
+    switch (index) {
+      case (?i) {
+        let post = postsBuffer.get(i);
+        let updatedPost: Post = {
+          id = post.id;
+          title = post.title;
+          content = post.content;
+          author = post.author;
+          timestamp = post.timestamp;
+          starred = true;
+        };
+        postsBuffer.put(i, updatedPost);
         #ok(())
       };
-      case (null) {
+      case null {
+        #err("Post not found")
+      };
+    }
+  };
+
+  public func unstarPost(id: Nat) : async Result.Result<(), Text> {
+    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0; starred = false }, postsBuffer, func(a, b) { a.id == b.id });
+    switch (index) {
+      case (?i) {
+        let post = postsBuffer.get(i);
+        let updatedPost: Post = {
+          id = post.id;
+          title = post.title;
+          content = post.content;
+          author = post.author;
+          timestamp = post.timestamp;
+          starred = false;
+        };
+        postsBuffer.put(i, updatedPost);
+        #ok(())
+      };
+      case null {
         #err("Post not found")
       };
     }
