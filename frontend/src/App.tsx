@@ -148,11 +148,13 @@ const App: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
             Dylan Waxes Lyrical
           </Typography>
-          <Button color="inherit" onClick={() => handleOpenDialog()}>Add Post</Button>
+          <Button color="inherit" variant="outlined" onClick={() => handleOpenDialog()} sx={{ borderRadius: 20 }}>
+            Add Post
+          </Button>
         </Toolbar>
       </AppBar>
       <Container maxWidth="lg">
