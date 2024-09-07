@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [formData, setFormData] = useState({ title: '', content: '', author: '' });
+  const [expandedPosts, setExpandedPosts] = useState<Set<bigint>>(new Set());
 
   useEffect(() => {
     fetchPosts();
@@ -73,33 +74,48 @@ const App: React.FC = () => {
     }
   };
 
+  const toggleExpandPost = (postId: bigint) => {
+    setExpandedPosts((prevExpanded) => {
+      const newExpanded = new Set(prevExpanded);
+      if (newExpanded.has(postId)) {
+        newExpanded.delete(postId);
+      } else {
+        newExpanded.add(postId);
+      }
+      return newExpanded;
+    });
+  };
+
   const renderPosts = (postList: Post[], isFeatured: boolean = false) => (
     <Grid container spacing={3}>
-      {postList.map((post) => (
-        <Grid item xs={12} key={Number(post.id)}>
-          <Card>
-            <CardContent>
-              <Typography variant={isFeatured ? 'h4' : 'h5'} component="div" gutterBottom>
-                {post.title}
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                By {post.author} | {new Date(Number(post.timestamp) / 1000000).toLocaleString()}
-              </Typography>
-              <Typography variant="body1" paragraph>
-                {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
-              </Typography>
-              {post.content.length > 200 && (
-                <Button variant="text" color="primary">
-                  Read More
+      {postList.map((post) => {
+        const isExpanded = expandedPosts.has(post.id);
+        return (
+          <Grid item xs={12} key={Number(post.id)}>
+            <Card>
+              <CardContent>
+                <Typography variant={isFeatured ? 'h4' : 'h5'} component="div" gutterBottom>
+                  {post.title}
+                </Typography>
+                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                  By {post.author} | {new Date(Number(post.timestamp) / 1000000).toLocaleString()}
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  {isExpanded ? post.content : `${post.content.substring(0, 200)}${post.content.length > 200 ? '...' : ''}`}
+                </Typography>
+                {post.content.length > 200 && (
+                  <Button variant="text" color="primary" onClick={() => toggleExpandPost(post.id)}>
+                    {isExpanded ? 'Read Less' : 'Read More'}
+                  </Button>
+                )}
+                <Button variant="outlined" color="primary" onClick={() => handleOpenDialog(post)} sx={{ mt: 2, ml: 2 }}>
+                  Edit
                 </Button>
-              )}
-              <Button variant="outlined" color="primary" onClick={() => handleOpenDialog(post)} sx={{ mt: 2 }}>
-                Edit
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
+              </CardContent>
+            </Card>
+          </Grid>
+        );
+      })}
     </Grid>
   );
 
