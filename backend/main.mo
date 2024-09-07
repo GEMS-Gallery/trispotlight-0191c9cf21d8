@@ -87,6 +87,20 @@ actor {
     }
   };
 
+  public func deletePost(id: Nat) : async Result.Result<(), Text> {
+    let index = Buffer.indexOf<Post>({ id = id; title = ""; content = ""; author = ""; timestamp = 0 }, postsBuffer, func(a, b) { a.id == b.id });
+    switch (index) {
+      case (?i) {
+        ignore postsBuffer.remove(i);
+        featuredPostIds := Array.filter<Nat>(featuredPostIds, func(fid) { fid != id });
+        #ok(())
+      };
+      case null {
+        #err("Post not found")
+      };
+    }
+  };
+
   public query func getPosts() : async [Post] {
     Buffer.toArray(postsBuffer)
   };

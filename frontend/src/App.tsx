@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [formData, setFormData] = useState({ title: '', content: '', author: '' });
   const [expandedPosts, setExpandedPosts] = useState<Set<bigint>>(new Set());
+  const [deleteConfirmation, setDeleteConfirmation] = useState<Post | null>(null);
 
   useEffect(() => {
     fetchPosts();
@@ -86,6 +87,22 @@ const App: React.FC = () => {
     });
   };
 
+  const handleDeleteConfirmation = (post: Post) => {
+    setDeleteConfirmation(post);
+  };
+
+  const handleDeletePost = async () => {
+    if (deleteConfirmation) {
+      try {
+        await backend.deletePost(deleteConfirmation.id);
+        setDeleteConfirmation(null);
+        fetchPosts();
+      } catch (error) {
+        console.error('Error deleting post:', error);
+      }
+    }
+  };
+
   const renderPosts = (postList: Post[], isFeatured: boolean = false) => (
     <Grid container spacing={3}>
       {postList.map((post) => {
@@ -111,6 +128,9 @@ const App: React.FC = () => {
                 <Button variant="outlined" color="primary" onClick={() => handleOpenDialog(post)} sx={{ mt: 2, ml: 2 }}>
                   Edit
                 </Button>
+                <Button variant="outlined" color="secondary" onClick={() => handleDeleteConfirmation(post)} sx={{ mt: 2, ml: 2 }}>
+                  Delete
+                </Button>
               </CardContent>
             </Card>
           </Grid>
@@ -124,7 +144,7 @@ const App: React.FC = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            My Blog
+            Dylan Waxes Lyrical
           </Typography>
           <Button color="inherit" onClick={() => handleOpenDialog()}>Add Post</Button>
         </Toolbar>
@@ -197,6 +217,25 @@ const App: React.FC = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={handleSubmit}>Save</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deleteConfirmation !== null}
+        onClose={() => setDeleteConfirmation(null)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the post "{deleteConfirmation?.title}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmation(null)}>Cancel</Button>
+          <Button onClick={handleDeletePost} autoFocus>
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

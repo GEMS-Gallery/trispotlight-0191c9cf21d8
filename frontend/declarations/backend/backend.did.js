@@ -10,6 +10,7 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'createPost' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
+    'deletePost' : IDL.Func([IDL.Nat], [Result], []),
     'editPost' : IDL.Func(
         [IDL.Nat, IDL.Text, IDL.Text, IDL.Text],
         [Result],
